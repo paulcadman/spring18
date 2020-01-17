@@ -30,13 +30,69 @@ Check compare_lt_iff. (* Note that this one can be used with [apply], despite th
 Check compare_gt_iff.
 Check compare_eq_iff.
 
+Print BST.
+Print tree.
+Check tree_ind.
+Check t.
+Check member.
+Print member.
+
 Theorem insert_member: forall t n, BST t -> member n (insert n t) = true.
 Proof.
-Admitted.
+  induction t.
+  - simpl.
+    intros.
+    Check compare_refl.
+    rewrite compare_refl.
+    reflexivity.
+  - Check lt_not_eq.
+    Search (lt _ _).
+    simpl.
+    Check compare.
+    Print comparison.
+    Print comparison_ind.
+    intros.
+    remember (compare n d).
+    destruct c; simpl; rewrite <- Heqc.
+    +
+      reflexivity.
+    +
+      apply IHt1.
+      apply H.
+    +
+      apply IHt2.
+      apply H.
+Qed.
 
 Theorem insert_ok: forall t n, BST t -> BST (insert n t).
 Proof.
-Admitted.
+  induction t.
+  - compute.
+    (* unfold insert. *)
+    (* simpl. *)
+    (* unfold tree_lt. *)
+    (* simpl. *)
+    (* unfold tree_gt. *)
+    (* simpl. *)
+    intros.
+    repeat split; trivial.
+  - simpl.
+    intros.
+    remember (compare n d).
+    remember H.
+    destruct H as [BST_t1 [ ltd [BST_t2 gtd]]].
+    induction c.
+    + simpl.
+      assumption.
+    + simpl.
+      repeat split.
+      * apply (IHt1 n BST_t1).
+
+  
+
+
+
+
 
 Theorem delete_ok: forall t n, BST t -> BST (delete n t).
 Proof.
