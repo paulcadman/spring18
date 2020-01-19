@@ -87,6 +87,7 @@ Proof.
     + simpl.
       repeat split.
       * apply (IHt1 n BST_t1).
+    Admitted.
 
   
 
