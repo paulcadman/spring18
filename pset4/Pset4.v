@@ -64,6 +64,29 @@ Proof.
       apply H.
 Qed.
 
+
+Lemma foo: forall t n d, tree_lt d t -> lt n d -> tree_lt d (insert n t).
+Proof.
+  intros.
+  induction t.
+  - compute.
+    firstorder.
+  - simpl.
+    (* remember (compare n d0).  *)
+    destruct (compare n d0); repeat (split + apply H + apply IHt1 + apply IHt2).
+Qed.
+
+Lemma foo2: forall t n d, tree_gt d t -> lt d n -> tree_gt d (insert n t).
+Proof.
+  intros.
+  induction t.
+  - compute.
+    firstorder.
+  - simpl.
+    (* remember (compare n d0).  *)
+    destruct (compare n d0); repeat (split + apply H + apply IHt1 + apply IHt2).
+Qed.
+
 Theorem insert_ok: forall t n, BST t -> BST (insert n t).
 Proof.
   induction t.
@@ -76,23 +99,46 @@ Proof.
     (* simpl. *)
     intros.
     repeat split; trivial.
-  - simpl.
+  -
     intros.
+    simpl.
     remember (compare n d).
-    remember H.
-    destruct H as [BST_t1 [ ltd [BST_t2 gtd]]].
-    induction c.
-    + simpl.
-      assumption.
-    + simpl.
-      repeat split.
-      * apply (IHt1 n BST_t1).
+    destruct c.
+    * apply H.
+    * simpl.
+      split.
+    + apply IHt1.
+      destruct H as [H1 [H2 [H3 H4]]].
+      apply H1.
+    +
+      split.
+      apply foo.
+      apply H.
+      Print Lt.
+      Print lt.
+      Check compare_lt_iff.
+      apply compare_lt_iff.
+      Search (?x = ?y -> ?y = ?x).
+      symmetry.
+      apply Heqc; repeat (split || apply H).
+      split; repeat (apply H || apply foo2).
+      * split; repeat (split || apply H || apply foo2).
+        ++ apply IHt2.
+           apply H.
+        ++ apply compare_gt_iff.
+           symmetry.
+           assumption.
+Qed.
 
-  
 
-
-
-
+    (* remember H. *)
+    (* destruct H as [BST_t1 [ ltd [BST_t2 gtd]]]. *)
+    (* induction c. *)
+    (* + simpl. *)
+    (*   assumption. *)
+    (* + simpl. *)
+    (*   repeat split. *)
+    (*   * apply (IHt1 n BST_t1). *)
 
 Theorem delete_ok: forall t n, BST t -> BST (delete n t).
 Proof.
